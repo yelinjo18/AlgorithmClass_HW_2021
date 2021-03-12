@@ -1,5 +1,8 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
+
 
 int tree[1000 + 1][2];	// [(1 <= n_node <= 10000)][l, r]
 int goal;
@@ -20,6 +23,12 @@ int RecursionGetSize(int now)
 
 int main()
 {
+	ifstream input;
+	input.open("input.txt");
+
+
+
+
 	int n_data;		cin >> n_data;
 	while (n_data--)
 	{
