@@ -1,9 +1,151 @@
 #include <iostream>
+#include <fstream>
+#include <ctime>
+#include <cstdlib>
 #include <vector>
-#define SIZE 100
 using namespace std;
+vector<int> mydata;
+float result[12][3];
 
-int list[SIZE];
+void MergeSort(int low, int high);
+void QuickSort(int low, int high);
+void getRandomSortTime(int n, int x, int y);
+
+int main()
+{
+	srand(static_cast<unsigned int>(time(0)));		
+	ifstream input;
+	input.open("input.txt");
+	//cout << float(time / CLOCKS_PER_SEC);
+
+	// sorted data
+	int iter = 3;
+	while (iter--)
+	{
+		// make sorted data
+		int n;	input >> n;
+		result[0][2 - iter] = n;
+		mydata.resize(0);
+		for (int i = 0; i < n; i++)
+			mydata.push_back(i);
+
+		// Get merge sort time
+		clock_t s = clock();
+		MergeSort(0, n - 1);
+		float time = clock() - s;
+		result[1][2 - iter] = time / CLOCKS_PER_SEC;
+
+		// Get quick sort time
+		s = clock();
+		QuickSort(0, n - 1);
+		time = clock() - s;
+		result[2][2 - iter] = time / CLOCKS_PER_SEC;
+	}
+
+	// random data
+	iter = 3;
+	while (iter--)
+	{
+		// make random data
+		int n;	input >> n;
+		result[3][2 - iter] = n;
+		getRandomSortTime(n, 4, 2 - iter);
+		getRandomSortTime(n, 5, 2 - iter);
+		getRandomSortTime(n, 6, 2 - iter);
+
+		// get average
+		result[7][2 - iter] = float(result[7][2 - iter] / 3);
+		result[11][2 - iter] = float(result[11][2 - iter] / 3);
+	}
+
+	// print result
+	{
+		//sorted
+		cout << "sorted    \t";
+		for (int i = 0; i < 3; i++)
+			cout << "N=" << result[0][i] << '\t';
+		cout << '\n';
+		cout << "Merge Sort\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[1][i] << '\t';
+		cout << '\n';
+		cout << "Quick Sort\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[2][i] << '\t';
+		cout << "\n\n";
+
+		//random
+		cout << "random    \t" << "      \t";
+		for (int i = 0; i < 3; i++)
+			cout << "N=" << result[3][i] << "\t";
+		cout << '\n';
+
+		cout << "Merge Sort\tdata 1\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[4][i] << '\t';
+		cout << '\n';
+		cout << "          \tdata 2\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[5][i] << '\t';
+		cout << '\n';
+		cout << "          \tdata 3\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[6][i] << '\t';
+		cout << '\n';
+		cout << "          \taverage\t";
+		cout << fixed;
+		cout.precision(3);
+		for (int i = 0; i < 3; i++)
+			cout << result[7][i] << '\t';
+		cout << '\n';
+
+		cout << "Quick Sort\tdata 1\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[8][i] << '\t';
+		cout << '\n';
+		cout << "          \tdata 2\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[9][i] << '\t';
+		cout << '\n';
+		cout << "          \tdata 3\t";
+		for (int i = 0; i < 3; i++)
+			cout << result[10][i] << '\t';
+		cout << '\n';
+		cout << "          \taverage\t";
+		cout << fixed;
+		cout.precision(3);
+		for (int i = 0; i < 3; i++)
+			cout << result[11][i] << '\t';
+		cout << '\n';
+	}
+}
+
+void getRandomSortTime(int n, int x, int y)
+{
+	mydata.resize(0);
+	for (int i = 0; i < n; i++)
+		mydata.push_back(int(rand() % n));
+
+	vector<int> save(mydata);
+
+	// Get merge sort time
+	clock_t s = clock();
+	MergeSort(0, n - 1);
+	float time = clock() - s;
+	result[x][y] = time / CLOCKS_PER_SEC;
+	result[7][y] += result[x][y];
+
+	mydata.resize(save.size());
+
+	copy(save.begin(), save.end(), mydata.begin());
+
+	// Get quick sort time
+	s = clock();
+	QuickSort(0, n - 1);
+	time = clock() - s;
+	result[x + 4][y] = time / CLOCKS_PER_SEC;
+	result[11][y] += result[x + 4][y];
+}
 
 void MergeSort(int low, int high)
 {
@@ -19,18 +161,18 @@ void MergeSort(int low, int high)
 		int i = low;
 		int j = mid + 1;
 		int k = low;
-		int U[SIZE] = { 0 };
+		vector<int> U(mydata.size());
 
 		while (i <= mid && j <= high)
 		{
-			if (list[i] < list[j])
+			if (mydata[i] < mydata[j])
 			{
-				U[k] = list[i];
+				U[k] = mydata[i];
 				i++;
 			}
 			else
 			{
-				U[k] = list[j];
+				U[k] = mydata[j];
 				j++;
 			}
 			k++;
@@ -40,20 +182,20 @@ void MergeSort(int low, int high)
 		{
 			while (j <= high)
 			{
-				U[k] = list[j];
+				U[k] = mydata[j];
 				k++;	j++;
 			}
 		}
 		else {
 			while (i <= mid)
 			{
-				U[k] = list[i];
+				U[k] = mydata[i];
 				k++;	i++;
 			}
 		}
 
 		for (int p = low; p <= high; p++)
-			list[p] = U[p];
+			mydata[p] = U[p];
 	}
 }
 
@@ -63,32 +205,27 @@ void QuickSort(int low, int high)
 	if (low < high)
 	{
 		// partition
-		int pivotitem = list[low];
+		int pivotitem = mydata[low];
 		int j = low;
 		for (int i = low + 1; i <= high; i++)
 		{
-			if (list[i] < pivotitem)
+			if (mydata[i] < pivotitem)
 			{
 				j++;
 				// exchange list[i] <-> list[j]
-				int tmp = list[i];
-				list[i] = list[j];
-				list[j] = tmp;
+				int tmp = mydata[i];
+				mydata[i] = mydata[j];
+				mydata[j] = tmp;
 			}
 			pivotpoint = j;
 			//exchange list[low]<->list[pivotpoint]
-			int tmp = list[low];
-			list[low] = list[pivotpoint];
-			list[pivotpoint] = tmp;
+			int tmp = mydata[low];
+			mydata[low] = mydata[pivotpoint];
+			mydata[pivotpoint] = tmp;
 		}
 
 		// recursion
 		QuickSort(low, pivotpoint - 1);
 		QuickSort(pivotpoint + 1, high);
 	}
-}
-
-int main()
-{
-
 }
