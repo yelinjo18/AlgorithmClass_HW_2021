@@ -5,7 +5,7 @@
 #include <vector>
 using namespace std;
 vector<int> mydata;
-float result[12][3];
+double result[12][3];
 
 void MergeSort(int low, int high);
 void QuickSort(int low, int high);
@@ -32,14 +32,14 @@ int main()
 		// Get merge sort time
 		clock_t s = clock();
 		MergeSort(0, n - 1);
-		float time = clock() - s;
-		result[1][2 - iter] = time / CLOCKS_PER_SEC;
+		double time = clock() - s;
+		result[1][2 - iter] = double(time / CLOCKS_PER_SEC);
 
 		// Get quick sort time
 		s = clock();
 		QuickSort(0, n - 1);
 		time = clock() - s;
-		result[2][2 - iter] = time / CLOCKS_PER_SEC;
+		result[2][2 - iter] = double(time / CLOCKS_PER_SEC);
 	}
 
 	// random data
@@ -54,8 +54,8 @@ int main()
 		getRandomSortTime(n, 6, 2 - iter);
 
 		// get average
-		result[7][2 - iter] = float(result[7][2 - iter] / 3);
-		result[11][2 - iter] = float(result[11][2 - iter] / 3);
+		result[7][2 - iter] = double(result[7][2 - iter] / 3);
+		result[11][2 - iter] = double(result[11][2 - iter] / 3);
 	}
 
 	// print result
@@ -99,6 +99,7 @@ int main()
 			cout << result[7][i] << '\t';
 		cout << '\n';
 
+		cout.unsetf(ios::fixed);
 		cout << "Quick Sort\tdata 1\t";
 		for (int i = 0; i < 3; i++)
 			cout << result[8][i] << '\t';
@@ -131,8 +132,8 @@ void getRandomSortTime(int n, int x, int y)
 	// Get merge sort time
 	clock_t s = clock();
 	MergeSort(0, n - 1);
-	float time = clock() - s;
-	result[x][y] = time / CLOCKS_PER_SEC;
+	double time = clock() - s;
+	result[x][y] = double(time / CLOCKS_PER_SEC);
 	result[7][y] += result[x][y];
 
 	mydata.resize(save.size());
@@ -143,7 +144,7 @@ void getRandomSortTime(int n, int x, int y)
 	s = clock();
 	QuickSort(0, n - 1);
 	time = clock() - s;
-	result[x + 4][y] = time / CLOCKS_PER_SEC;
+	result[x + 4][y] = double(time / CLOCKS_PER_SEC);
 	result[11][y] += result[x + 4][y];
 }
 
